@@ -1,0 +1,45 @@
+{
+  "name": "nodelens",
+  "version": "1.0.0",
+  "description": "A lightweight tool that auto-restarts your Node.js server on file changes.",
+  "type": "module",
+  "bin": {
+    "nodelens": "./bin/nodelens.js"
+  },
+  "main": "./src/watcher.js",
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "node",
+    "watcher",
+    "restart",
+    "dev-tool",
+    "nodemon alternative",
+    "file-watcher",
+    "hot-reload"
+  ],
+  "author": "Efthimis Drolapas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/efthimis-dr/nodelens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/efthimis-dr/nodelens/issues"
+  },
+  "homepage": "https://github.com/efthimis-dr/nodelens",
+  "scripts": {
+    "start": "node ./bin/nodelens.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
