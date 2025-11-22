@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/nodelens.svg)](https://npmjs.com/package/nodelens)
+[![npm version](https://img.shields.io/npm/v/nodelens.svg)](https://www.npmjs.com/package/@efthimis.dr/nodelens)
 
 
 # About nodeLens
@@ -187,7 +187,7 @@ Saves all logs to `.nodelens/nodelens.txt`.
 
 # Links
 
-- [npm](https://www.npmjs.com/package/nodelens)
+- [npm](https://www.npmjs.com/package/@efthimis.dr/nodelens)
 - [GitHub](https://github.com/efthimis/nodelens)
 - [Report an issue](https://github.com/efthimis/nodelens/issues)
 - [Get Support](https://github.com/efthimis/nodelens/discussions)
