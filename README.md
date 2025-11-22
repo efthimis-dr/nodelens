@@ -1,5 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/nodelens.svg)](https://www.npmjs.com/package/@efthimis.dr/nodelens)
-
+[![npm version](https://img.shields.io/npm/v/@efthimis.dr%2Fnodelens.svg)](https://www.npmjs.com/package/@efthimis.dr/nodelens)
 
 # About nodeLens
 
