@@ -1,6 +1,11 @@
+// ================ IMPORTS ================
+
 import fs from "fs";
 import path from "path";
 
+// ================ CONSTANTS ================
+
+// ANSI color codes for console styling
 const COLORS = {
     error: "\x1b[31m",
     warn: "\x1b[33m",
@@ -10,14 +15,20 @@ const COLORS = {
     reset: "\x1b[0m"
 };
 
+// ================ LOGGER STATE ================
+
 let logLabel = true;
 let logTimestamp = false;
 let silentLogs = false;
 
 let logFilePath = null;
 
+// Regex used to strip ANSI color codes before writing to file
 const ANSI_REGEX = /\x1b\[[0-9;]*m/g;
 
+// ================ HELPERS ================
+
+// Returns current time formatted as HH:MM:SS
 function getTimestamp() {
     const now = new Date();
     const hh = String(now.getHours()).padStart(2, "0");
@@ -26,6 +37,16 @@ function getTimestamp() {
     return `${hh}:${mm}:${ss}`;
 }
 
+// ================ CONFIGURATION ================
+
+/**
+ * Updates logger display and file-saving options
+ * @param {Object} options
+ * @property {boolean} logLabel - Whether to include [LABEL] prefix
+ * @property {boolean} logTimestamp - Whether to show timestamp
+ * @property {boolean} silentLogs - Suppress non-error logs
+ * @property {boolean} saveLogs - Save output to .nodelens/nodelens.txt
+ */
 export function setLogStyle(options = {}) {
     if (typeof options.logLabel === "boolean") {
         logLabel = options.logLabel;
@@ -39,6 +60,7 @@ export function setLogStyle(options = {}) {
         silentLogs = options.silentLogs;
     }
 
+    // Handle enabling/disabling of file saving
     if (typeof options.saveLogs === "boolean") {
         if (options.saveLogs) {
             const dir = path.join(process.cwd(), ".nodelens");
@@ -52,6 +74,9 @@ export function setLogStyle(options = {}) {
     }
 }
 
+// ================ FORMATTERS ================
+
+// Determine whether a message should be printed to console
 function shouldPrint(label) {
     if (silentLogs) {
         return label === "ERROR" || label === "WARN";
@@ -59,19 +84,21 @@ function shouldPrint(label) {
     return true;
 }
 
+// Formats console output (colorized and prefixed)
 function format(prefixColor, label, msg) {
     const timestampPart = logTimestamp ? `[${getTimestamp()}] ` : "";
     const labelPart = logLabel ? `[${label}] ` : "";
-
     return `NL ${timestampPart}${prefixColor}${labelPart}${COLORS.reset}${msg}`;
 }
 
+// Formats message for file output (no colors)
 function formatForFile(label, msg) {
     const timestampPart = `[${getTimestamp()}] `;
     const labelPart = `[${label}] `;
     return `NL ${timestampPart}${labelPart}${msg}`;
 }
 
+// Append formatted log message to file
 function writeToFile(label, msg) {
     if (!logFilePath) return;
 
@@ -83,35 +110,41 @@ function writeToFile(label, msg) {
     }
 }
 
+// ================ LOG METHODS ================
+
 export const log = {
+    // Log error messages (always shown)
     error(msg) {
         writeToFile("ERROR", msg);
         if (!shouldPrint("ERROR")) return;
         console.log(format(COLORS.error, "ERROR", msg));
     },
 
+    // Log warnings (shown unless silentLogs hides them)
     warn(msg) {
         writeToFile("WARN", msg);
         if (!shouldPrint("WARN")) return;
         console.log(format(COLORS.warn, "WARN", msg));
     },
 
+    // Log general information
     info(msg) {
         writeToFile("INFO", msg);
         if (!shouldPrint("INFO")) return;
         console.log(format(COLORS.info, "INFO", msg));
     },
 
+    // Log success messages
     success(msg) {
         writeToFile("SUCCESS", msg);
         if (!shouldPrint("SUCCESS")) return;
         console.log(format(COLORS.success, "SUCCESS", msg));
     },
 
+    // Print a separator line for visual grouping
     separator() {
         if (!shouldPrint("INFO")) return;
         const line = "-------------------------";
-
         console.log(line);
 
         if (logFilePath) {
