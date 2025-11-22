@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="nl-logo-256x256.png" alt="nodeLens Logo" width="256">
+</p>
+
 [![npm version](https://img.shields.io/npm/v/@efthimis.dr%2Fnodelens.svg)](https://www.npmjs.com/package/@efthimis.dr/nodelens)
 
 # About nodeLens
