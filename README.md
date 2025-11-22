@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="[nl-banner-1000x300.png](https://raw.githubusercontent.com/efthimis-dr/nodelens/main/nl-banner-1000x300.png)" alt="nodeLens Banner">
+  <img src="nl-banner-1000x300.pnghttps://raw.githubusercontent.com/efthimis-dr/nodelens/main/nl-banner-1000x300.png" alt="nodeLens Banner">
 </p>
 
 [![npm version](https://img.shields.io/npm/v/@efthimis.dr%2Fnodelens.svg)](https://www.npmjs.com/package/@efthimis.dr/nodelens)
