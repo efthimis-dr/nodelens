@@ -24,13 +24,13 @@ nodeLens uses [Chokidar](https://github.com/paulmillr/chokidar), so it supports:
 ## Global
 
 ```bash
-npm i -g nodelens
+npm i -g "@efthimis.dr/nodelens"
 ```
 
 ## Local
 
 ```bash
-npm i nodelens
+npm i "@efthimis.dr/nodelens"
 ```
 
 ## After Installation (optional)
