@@ -1,3 +1,5 @@
+// ================ IMPORTS ================
+
 import chokidar from "chokidar";
 import { spawn } from "child_process";
 import path from "path";
@@ -5,6 +7,8 @@ import readline from "readline/promises";
 import { loadConfig, DEFAULT_CONFIG } from "./commands.js";
 import { log, setLogStyle } from "./utils/logger.js";
 import fs from "fs";
+
+// ================ INTERNAL STATE ================
 
 let server = null;
 let restartTimer = null;
@@ -14,17 +18,19 @@ let configDebounceTimer = null;
 let effectiveConfig = null;
 let silentOverride = null;
 
-const INTERNAL_ALWAYS_IGNORE = [
-    ".nodelens",
-    "nl.config.json"
-];
+// Internal files/folders that should always be ignored by watchers
+const INTERNAL_ALWAYS_IGNORE = [".nodelens", "nl.config.json"];
 
+// Stores last file change metadata for status reporting
 let lastChange = {
     file: null,
     event: null,
     timestamp: null
 };
 
+// ================ UTILITIES ================
+
+// Formats a timestamp as human-readable "time ago" string
 function formatAgoFull(timestamp) {
     const diff = Math.max(0, Date.now() - timestamp.getTime());
 
@@ -43,10 +49,12 @@ function formatAgoFull(timestamp) {
     return parts.join(", ") + " ago";
 }
 
+// Converts Windows backslashes to forward slashes for path normalization
 function toForwardSlashes(p) {
     return p.replace(/\\/g, "/");
 }
 
+// Converts a user pattern (string or RegExp) to a valid RegExp object
 function patternToRegExp(pattern) {
     if (pattern instanceof RegExp) return pattern;
 
@@ -67,6 +75,7 @@ function patternToRegExp(pattern) {
     }
 }
 
+// Merges provided config with DEFAULT_CONFIG for a full effective configuration
 function buildEffectiveConfig(rawConfig) {
     if (!rawConfig || typeof rawConfig !== "object") {
         return { ...DEFAULT_CONFIG };
@@ -78,6 +87,11 @@ function buildEffectiveConfig(rawConfig) {
     };
 }
 
+// ================ WATCHERS ================
+
+/**
+ * Creates the main project watcher that restarts the server when files change
+ */
 function createProjectWatcher(entry, projectRoot, effectiveConfigRef) {
     const { watch, ignore, debounceDelay, restartDelay } = effectiveConfigRef;
 
@@ -111,9 +125,12 @@ function createProjectWatcher(entry, projectRoot, effectiveConfigRef) {
         const rel = toForwardSlashes(path.relative(projectRoot, filePath));
         if (!rel) return;
 
+        // Skip ignored files
         if (ignoreRegexes.some(re => re.test(rel))) return;
+        // Skip files outside watched patterns
         if (watchRegexes && !watchRegexes.some(re => re.test(rel))) return;
 
+        // Record latest file change
         if (["add", "change", "unlink"].includes(event)) {
             lastChange = {
                 file: rel,
@@ -122,6 +139,7 @@ function createProjectWatcher(entry, projectRoot, effectiveConfigRef) {
             };
         }
 
+        // Trigger restart debounce
         if (!restartTimer) {
             log.separator();
             log.info(`Change in ${rel}. Restarting...`);
@@ -147,12 +165,15 @@ function createProjectWatcher(entry, projectRoot, effectiveConfigRef) {
     return watcher;
 }
 
+/**
+ * Creates watcher for detecting changes in nl.config.json
+ */
 function createConfigWatcher(projectRoot, onConfigUpdate) {
     const configDir = path.join(projectRoot, ".nodelens");
 
     const watcher = chokidar.watch(configDir, {
         ignoreInitial: true,
-        persistent: true,
+        persistent: true
     });
 
     watcher.on("all", (event, filePath) => {
@@ -177,6 +198,7 @@ function createConfigWatcher(projectRoot, onConfigUpdate) {
 
             let newEffectiveConfig = buildEffectiveConfig(raw);
 
+            // Preserve manual silent override from runtime commands
             if (silentOverride !== null) {
                 newEffectiveConfig.silentLogs = silentOverride;
             }
@@ -196,11 +218,17 @@ function createConfigWatcher(projectRoot, onConfigUpdate) {
     return watcher;
 }
 
+// ================ MAIN WATCHER CONTROLLER ================
+
+/**
+ * Starts the watcher, server, and CLI interface for runtime commands
+ */
 export function startWatcher(entry) {
     const entryPath = path.resolve(entry);
     const projectRoot = path.dirname(entryPath);
     const raw = loadConfig();
 
+    // Merge default config with loaded one
     effectiveConfig = raw
         ? buildEffectiveConfig(raw)
         : { ...DEFAULT_CONFIG };
@@ -211,9 +239,12 @@ export function startWatcher(entry) {
 
     setLogStyle(effectiveConfig);
 
+    // ---------------- Start server process ----------------
+
     startServer(entry);
     log.separator();
     log.info(`\x1b[32mStarting \`node ${entry}\`\x1b[0m`);
+
     if (fs.existsSync(path.join(projectRoot, ".nodelens", "nl.config.json"))) {
         log.info("Using \x1b[33mnl.config.json\x1b[0m");
     } else {
@@ -221,12 +252,15 @@ export function startWatcher(entry) {
     }
     log.info("Watching for file changes...");
 
+    // ================ RUNTIME COMMANDS ================
+
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
         prompt: ""
     });
 
+    // Graceful shutdown on Ctrl+C
     rl.on("SIGINT", () => {
         rl.close();
         process.kill(process.pid, "SIGINT");
@@ -238,10 +272,14 @@ export function startWatcher(entry) {
 
         const cmd = line.toLowerCase();
 
+        // ---------------- Utility Commands ----------------
+
         if (cmd === "clear" || cmd === "cls") {
             console.clear();
             return;
         }
+
+        // ---------------- Help ----------------
 
         if (cmd === "help" || cmd === "h" || cmd === "?") {
             console.log("-------------------------");
@@ -255,6 +293,8 @@ export function startWatcher(entry) {
             console.log(" clear/cls ...... Clears console");
             return;
         }
+
+        // ---------------- Status ----------------
 
         if (cmd === "status" || cmd === "stats") {
             console.log("-------------------------");
@@ -270,8 +310,9 @@ export function startWatcher(entry) {
             return;
         }
 
-        if (cmd === "last-change" || cmd === "lc") {
+        // ---------------- Last Change ----------------
 
+        if (cmd === "last-change" || cmd === "lc") {
             if (!lastChange.file) {
                 log.info("No changes recorded yet.");
                 return;
@@ -293,12 +334,15 @@ export function startWatcher(entry) {
             return;
         }
 
+        // ---------------- Silent Mode ----------------
+
         if (cmd.startsWith("silent")) {
             log.separator();
 
             const parts = cmd.split(/\s+/);
             const action = parts[1];
 
+            // Manual silent mode control
             if (action === "on") {
                 if (!effectiveConfig.silentLogs) {
                     effectiveConfig.silentLogs = true;
@@ -330,6 +374,8 @@ export function startWatcher(entry) {
             return;
         }
 
+        // ---------------- Restart ----------------
+
         if (cmd === "rs") {
             log.separator();
             log.info("Restarting server...");
@@ -341,6 +387,8 @@ export function startWatcher(entry) {
             return;
         }
 
+        // ---------------- Stop ----------------
+        
         if (cmd === "stop" || cmd === "x") {
             log.separator();
             log.info("Stopping nodeLens...");
@@ -354,10 +402,12 @@ export function startWatcher(entry) {
             process.exit(0);
         }
 
+        // Unknown command feedback
         log.separator();
         log.error(`Command not found: "${line}". Run "help" for commands list.`);
     });
 
+    // Start project + config watchers
     projectWatcher = createProjectWatcher(entry, projectRoot, effectiveConfig);
 
     configWatcher = createConfigWatcher(projectRoot, (newConfig) => {
@@ -367,6 +417,7 @@ export function startWatcher(entry) {
         projectWatcher = createProjectWatcher(entry, projectRoot, newConfig);
     });
 
+    // Handle process termination gracefully
     process.on("SIGINT", () => {
         if (projectWatcher) projectWatcher.close();
         if (configWatcher) configWatcher.close();
@@ -382,13 +433,17 @@ export function startWatcher(entry) {
     });
 }
 
+// ================ SERVER HANDLER ================
+
+// Spawns a Node.js process for the watched entry file
 function startServer(entry) {
     server = spawn("node", [entry], {
         stdio: ["ignore", "inherit", "inherit"]
     });
 
-    server.on("exit", (code) => {
-        if (code !== 0) {
+    // Detect abnormal process exits and report
+    server.on("exit", (code, signal) => {
+        if (!signal && code !== 0) {
             log.separator();
             log.error(`Server crashed (exit code ${code}). Waiting for changes...`);
         }
