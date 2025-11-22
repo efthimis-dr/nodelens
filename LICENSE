@@ -1,0 +1,43 @@
+MIT License with Commons Clause Restriction
+
+Copyright (c) 2025 Efthimis Drolapas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use
+the Software without restriction, including without limitation the rights to
+run and execute the Software, subject to the following conditions:
+
+THE FOLLOWING RESTRICTION APPLIES, AS DEFINED BY THE COMMONS CLAUSE BELOW:
+
+The rights granted in this license do not include the rights to modify,
+sell, sublicense, distribute modified versions of, or create derivative works
+based on the Software, except for private, personal use.
+
+---------------------------------------------------------------------
+
+Commons Clause Restriction
+
+The Software is provided to you by the copyright holder under the terms of
+the MIT license, with the following restriction:
+
+You are expressly prohibited from:
+
+1. Selling, hosting, or otherwise commercializing the Software.
+2. Modifying the Software for public or commercial use.
+3. Creating derivative works based on the Software for public distribution.
+4. Distributing modified copies of the Software.
+5. Including the Software as part of another commercial product.
+
+For clarity: You may download, install, run, and use the Software.
+You may read the source code. You may NOT modify, redistribute,
+or commercialize the Software in any form, except for personal, private use.
+
+---------------------------------------------------------------------
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
