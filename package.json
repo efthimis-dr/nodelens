@@ -1,10 +1,10 @@
 {
-  "name": "nodelens",
-  "version": "1.0.0",
+  "name": "@efthimis.dr/nodelens",
+  "version": "1.0.1",
   "description": "A lightweight tool that auto-restarts your Node.js server on file changes.",
   "type": "module",
   "bin": {
-    "nodelens": "./bin/nodelens.js"
+    "nodelens": "bin/nodelens.js"
   },
   "main": "./src/watcher.js",
   "files": [
@@ -26,7 +26,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/efthimis-dr/nodelens.git"
+    "url": "git+https://github.com/efthimis-dr/nodelens.git"
   },
   "bugs": {
     "url": "https://github.com/efthimis-dr/nodelens/issues"
