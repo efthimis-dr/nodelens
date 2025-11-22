@@ -1,9 +1,13 @@
+// ================ IMPORTS ================
+
 import fs from "fs";
 import path from "path";
 import readline from "readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { createRequire } from "module";
 import { log, setLogStyle } from "./utils/logger.js";
+
+// ================ CONSTANTS ================
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
@@ -12,16 +16,10 @@ const CONFIG_DIR = ".nodelens";
 const CONFIG_FILENAME = "nl.config.json";
 const LOG_FILENAME = "nodelens.txt";
 
+// Default configuration settings used for initialization and reset
 export const DEFAULT_CONFIG = {
     watch: "all",
-    ignore: [
-        "node_modules",
-        ".git",
-        "dist",
-        "build",
-        "temp",
-        "logs"
-    ],
+    ignore: ["node_modules", ".git", "dist", "build", "temp", "logs"],
     debounceDelay: 225,
     restartDelay: 0,
     logLabel: true,
@@ -30,27 +28,37 @@ export const DEFAULT_CONFIG = {
     saveLogs: false
 };
 
+// ================ PATH HELPERS ================
+
+// Get full directory path of .nodelens/
 function getConfigDir() {
     return path.join(process.cwd(), CONFIG_DIR);
 }
 
+// Get absolute path to nl.config.json
 function getConfigPath() {
     return path.join(getConfigDir(), CONFIG_FILENAME);
 }
 
+// Get absolute path to nodelens.txt
 function getLogPath() {
     return path.join(getConfigDir(), LOG_FILENAME);
 }
 
+// ================ COMMAND PARSER ================
+
+/**
+ * Parse CLI arguments and map them to command objects
+ * @param {Array<string>} args
+ * @returns {{type: string, entry: string}}
+ */
 export function parseCommands(args) {
     const cmd = {
         type: "run",
         entry: "index.js"
     };
 
-    if (!args || args.length === 0) {
-        return cmd;
-    }
+    if (!args || args.length === 0) return cmd;
 
     const [first, second] = args;
 
@@ -64,29 +72,35 @@ export function parseCommands(args) {
         return cmd;
     }
 
+    // ---------------- Config Commands ----------------
+
     if (first === "config" || first === "cfg") {
-        if (second === "init") {
-            cmd.type = "config-init";
-        } else if (second === "reset") {
-            cmd.type = "config-reset";
-        } else if (second === "delete") {
-            cmd.type = "config-delete";
-        } else {
-            cmd.type = "help";
-        }
+        if (second === "init") cmd.type = "config-init";
+        else if (second === "reset") cmd.type = "config-reset";
+        else if (second === "delete") cmd.type = "config-delete";
+        else cmd.type = "help";
         return cmd;
     }
+
+    // ---------------- Logs ----------------
 
     if (first === "clear-logs") {
         cmd.type = "clear-logs";
         return cmd;
     }
 
+    // Default: run mode with provided entry file
     cmd.type = "run";
     cmd.entry = first;
     return cmd;
 }
 
+// ================ CONFIG HANDLERS ================
+
+/**
+ * Loads nl.config.json and applies log style
+ * @returns {object|null} parsed config or null if missing/invalid
+ */
 export function loadConfig() {
     const configPath = getConfigPath();
 
@@ -96,6 +110,7 @@ export function loadConfig() {
         const raw = fs.readFileSync(configPath, "utf8");
         const config = JSON.parse(raw);
 
+        // Apply logger styling preferences from config
         setLogStyle({
             logLabel:
                 typeof config.logLabel === "boolean"
@@ -122,6 +137,9 @@ export function loadConfig() {
     }
 }
 
+/**
+ * Creates nl.config.json with default values
+ */
 export function createDefaultConfigFile() {
     const dir = getConfigDir();
     const configPath = getConfigPath();
@@ -135,15 +153,9 @@ export function createDefaultConfigFile() {
         return;
     }
 
-    const defaultConfig = {
-        ...DEFAULT_CONFIG
-    };
+    fs.writeFileSync(configPath, JSON.stringify({ ...DEFAULT_CONFIG }, null, 2));
 
-    fs.writeFileSync(
-        configPath,
-        JSON.stringify(defaultConfig, null, 2)
-    );
-
+    // Apply default log style
     setLogStyle({
         logLabel: DEFAULT_CONFIG.logLabel,
         logTimestamp: DEFAULT_CONFIG.logTimestamp,
@@ -154,6 +166,9 @@ export function createDefaultConfigFile() {
     log.success(`Created ${CONFIG_FILENAME} in .nodelens/`);
 }
 
+/**
+ * Deletes nl.config.json after confirmation
+ */
 export async function removeConfigFile() {
     const configPath = getConfigPath();
 
@@ -180,9 +195,13 @@ export async function removeConfigFile() {
     fs.rmSync(configPath);
     log.success(`Deleted ${CONFIG_FILENAME}.`);
 
+    // Reset to default style after deletion
     setLogStyle({ ...DEFAULT_CONFIG });
 }
 
+/**
+ * Resets nl.config.json to default values
+ */
 export async function resetConfigFile() {
     const dir = getConfigDir();
     const configPath = getConfigPath();
@@ -207,18 +226,11 @@ export async function resetConfigFile() {
         return;
     }
 
-    const resetConfig = {
-        ...DEFAULT_CONFIG
-    };
-
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
 
-    fs.writeFileSync(
-        configPath,
-        JSON.stringify(resetConfig, null, 2)
-    );
+    fs.writeFileSync(configPath, JSON.stringify({ ...DEFAULT_CONFIG }, null, 2));
 
     setLogStyle({
         logLabel: DEFAULT_CONFIG.logLabel,
@@ -230,6 +242,9 @@ export async function resetConfigFile() {
     log.success(`Reset ${CONFIG_FILENAME} in .nodelens/`);
 }
 
+/**
+ * Clears nodelens.txt logs after confirmation
+ */
 export async function clearLogFile() {
     const logPath = getLogPath();
 
@@ -240,9 +255,7 @@ export async function clearLogFile() {
 
     const rl = readline.createInterface({ input, output });
 
-    const answer = (await rl.question(
-        "Clear nodelens.txt? (y/N): "
-    ))
+    const answer = (await rl.question("Clear nodelens.txt? (y/N): "))
         .trim()
         .toLowerCase();
 
@@ -261,10 +274,14 @@ export async function clearLogFile() {
     }
 }
 
+// ================ INFO COMMANDS ================
+
+// Print current version from package.json
 export function printVersion() {
     console.log(pkg.version);
 }
 
+// Print available CLI commands
 export function printHelp() {
     console.log(`
 \x1b[33mCommands:\x1b[0m
