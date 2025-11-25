@@ -6,7 +6,7 @@
 
 # About nodeLens
 
-nodeLens is a fast and lightweight file-watcher that automatically restarts your Node.js server after file changes.
+A lightweight and simple alternative to nodemon that watches and auto-restarts your entry file on file changes. Originally built for servers.
 
 # Platform Support
 
@@ -21,7 +21,7 @@ nodeLens uses [Chokidar](https://github.com/paulmillr/chokidar), so it supports:
 
 # Installation
 
-## Global
+## Global (recommended)
 
 ```bash
 npm i -g "@efthimis.dr/nodelens"
@@ -191,9 +191,9 @@ Saves all logs to `.nodelens/nodelens.txt`.
 # Links
 
 - [npm](https://www.npmjs.com/package/@efthimis.dr/nodelens)
-- [GitHub](https://github.com/efthimis/nodelens)
-- [Report an issue](https://github.com/efthimis/nodelens/issues)
-- [Get Support](https://github.com/efthimis/nodelens/discussions)
+- [GitHub](https://github.com/efthimis-dr/nodelens)
+- [Report an issue](https://github.com/efthimis-dr/nodelens/issues)
+- [Get Support](https://github.com/efthimis-dr/nodelens/discussions)
 - [Donate](https://www.paypal.com/donate/?hosted_button_id=K2NBKKED548D4)
 
 # License
