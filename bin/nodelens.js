@@ -31,7 +31,7 @@ if (args.length === 0) {
     process.exit(0);
 }
 
-// ---------------- Help / Version ----------------
+// ──────────────── Help / Version ────────────────
 
 if (cmd.type === "help") {
     printHelp();
@@ -43,7 +43,7 @@ if (cmd.type === "version") {
     process.exit(0);
 }
 
-// ---------------- Config Commands ----------------
+// ──────────────── Config Commands ────────────────
 
 // Create default config file if missing
 if (cmd.type === "config-init") {
@@ -63,7 +63,7 @@ if (cmd.type === "config-reset") {
     process.exit(0);
 }
 
-// ---------------- Logs ----------------
+// ──────────────── Logs ────────────────
 
 // Clear all stored logs from the log file
 if (cmd.type === "clear-logs") {
