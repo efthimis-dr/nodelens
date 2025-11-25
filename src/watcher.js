@@ -7,6 +7,8 @@ import readline from "readline/promises";
 import { loadConfig, DEFAULT_CONFIG } from "./commands.js";
 import { log, setLogStyle } from "./utils/logger.js";
 import fs from "fs";
+import updateNotifier from "update-notifier";
+import pkg from "../package.json" assert { type: "json" };
 
 // ================ INTERNAL STATE ================
 
@@ -221,9 +223,22 @@ function createConfigWatcher(projectRoot, onConfigUpdate) {
 // ================ MAIN WATCHER CONTROLLER ================
 
 /**
- * Starts the watcher, server, and CLI interface for runtime commands
+ * Starts the watcher, server, checks for updates and CLI interface for runtime commands
  */
 export function startWatcher(entry) {
+
+    // ──────────────── Update notifier ────────────────
+
+    const notifier = updateNotifier({ pkg, updateCheckInterval: 1000 * 60 * 60 * 24 }); // check once per day
+
+    if (notifier.update) {
+        console.log("\n──────────────────────────────────────────────");
+        console.log("\x1b[33mNew nodeLens version available\x1b[0m");
+        console.log("Version: \x1b[31m1.0.1\x1b[0m → \x1b[32m1.1.0\x1b[0m");
+        console.log("Run \x1b[36mnpm i -g @efthimis.dr/nodelens\x1b[0m to update.");
+        console.log("──────────────────────────────────────────────\n");
+    }
+
     const entryPath = path.resolve(entry);
     const projectRoot = path.dirname(entryPath);
     const raw = loadConfig();
@@ -239,7 +254,7 @@ export function startWatcher(entry) {
 
     setLogStyle(effectiveConfig);
 
-    // ---------------- Start server process ----------------
+    // ──────────────── Start server process ────────────────
 
     startServer(entry);
     log.separator();
@@ -272,17 +287,17 @@ export function startWatcher(entry) {
 
         const cmd = line.toLowerCase();
 
-        // ---------------- Utility Commands ----------------
+        // ──────────────── Utility Commands ────────────────
 
         if (cmd === "clear" || cmd === "cls") {
             console.clear();
             return;
         }
 
-        // ---------------- Help ----------------
+        // ──────────────── Help ────────────────
 
         if (cmd === "help" || cmd === "h" || cmd === "?") {
-            console.log("-------------------------");
+            console.log("─────────────────────────");
             console.log("\x1b[33mnodeLens Runtime Commands:\x1b[0m");
             console.log(" rs ............. Restarts server");
             console.log(" stop/x ......... Stops nodeLens");
@@ -294,10 +309,10 @@ export function startWatcher(entry) {
             return;
         }
 
-        // ---------------- Status ----------------
+        // ──────────────── Status ────────────────
 
         if (cmd === "status" || cmd === "stats") {
-            console.log("-------------------------");
+            console.log("─────────────────────────");
             console.log("\x1b[33mnodeLens Status:\x1b[0m");
             console.log(` Server PID .... ${server ? server.pid : "not running"}`);
             console.log(` Watching ...... ${Array.isArray(effectiveConfig.watch) ? effectiveConfig.watch.join(", ") : effectiveConfig.watch}`);
@@ -310,7 +325,7 @@ export function startWatcher(entry) {
             return;
         }
 
-        // ---------------- Last Change ----------------
+        // ──────────────── Last Change ────────────────
 
         if (cmd === "last-change" || cmd === "lc") {
             if (!lastChange.file) {
@@ -326,7 +341,7 @@ export function startWatcher(entry) {
             });
             const agoStr = formatAgoFull(lastChange.timestamp);
 
-            console.log("-------------------------");
+            console.log("─────────────────────────");
             console.log("\x1b[33mLast Change:\x1b[0m");
             console.log(`File ..... ${lastChange.file}`);
             console.log(`Event .... ${lastChange.event}`);
@@ -334,7 +349,7 @@ export function startWatcher(entry) {
             return;
         }
 
-        // ---------------- Silent Mode ----------------
+        // ──────────────── Silent Mode ────────────────
 
         if (cmd.startsWith("silent")) {
             log.separator();
@@ -374,7 +389,7 @@ export function startWatcher(entry) {
             return;
         }
 
-        // ---------------- Restart ----------------
+        // ──────────────── Restart ────────────────
 
         if (cmd === "rs") {
             log.separator();
@@ -387,8 +402,8 @@ export function startWatcher(entry) {
             return;
         }
 
-        // ---------------- Stop ----------------
-        
+        // ──────────────── Stop ────────────────
+
         if (cmd === "stop" || cmd === "x") {
             log.separator();
             log.info("Stopping nodeLens...");
@@ -404,7 +419,7 @@ export function startWatcher(entry) {
 
         // Unknown command feedback
         log.separator();
-        log.error(`Command not found: "${line}". Run "help" for commands list.`);
+        log.error(`Command not found: "${line}". Run \x1b[36mhelp\x1b[0m for commands list.`);
     });
 
     // Start project + config watchers
