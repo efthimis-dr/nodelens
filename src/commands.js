@@ -72,7 +72,7 @@ export function parseCommands(args) {
         return cmd;
     }
 
-    // ---------------- Config Commands ----------------
+    // ──────────────── Config Commands ────────────────
 
     if (first === "config" || first === "cfg") {
         if (second === "init") cmd.type = "config-init";
@@ -82,7 +82,7 @@ export function parseCommands(args) {
         return cmd;
     }
 
-    // ---------------- Logs ----------------
+    // ──────────────── Logs ────────────────
 
     if (first === "clear-logs") {
         cmd.type = "clear-logs";
@@ -163,7 +163,7 @@ export function createDefaultConfigFile() {
         saveLogs: DEFAULT_CONFIG.saveLogs
     });
 
-    log.success(`Created ${CONFIG_FILENAME} in .nodelens/`);
+    log.success(`Created ${CONFIG_FILENAME} in .nodelens/.`);
 }
 
 /**
@@ -193,7 +193,7 @@ export async function removeConfigFile() {
     }
 
     fs.rmSync(configPath);
-    log.success(`Deleted ${CONFIG_FILENAME}.`);
+    log.success(`Deleted ${CONFIG_FILENAME} in .nodelens/.`);
 
     // Reset to default style after deletion
     setLogStyle({ ...DEFAULT_CONFIG });
@@ -239,7 +239,7 @@ export async function resetConfigFile() {
         saveLogs: DEFAULT_CONFIG.saveLogs
     });
 
-    log.success(`Reset ${CONFIG_FILENAME} in .nodelens/`);
+    log.success(`Reset ${CONFIG_FILENAME}.`);
 }
 
 /**
@@ -268,9 +268,9 @@ export async function clearLogFile() {
 
     try {
         fs.writeFileSync(logPath, "");
-        log.success("Cleared nodelens.txt");
+        log.success("Cleared nodelens.txt in .nodelens/.");
     } catch (err) {
-        log.error(`Failed to clear nodelens.txt`);
+        log.error(`Failed to clear nodelens.txt in .nodelens/.`);
     }
 }
 
@@ -303,6 +303,6 @@ export function printHelp() {
     nodelens clear-logs ......... Clears .nodelens/nodelens.txt
 
   \x1b[33mRuntime:\x1b[0m
-    Run "help" during runtime to see runtime commands.
+    Run \x1b[36mhelp\x1b[0m during runtime to see runtime commands.
 `);
 }
