@@ -234,7 +234,7 @@ export function startWatcher(entry) {
     if (notifier.update) {
         console.log("\n──────────────────────────────────────────────");
         console.log("\x1b[33mNew nodeLens version available\x1b[0m");
-        console.log("Version: \x1b[31m1.0.1\x1b[0m → \x1b[32m1.1.0\x1b[0m");
+        console.log(`Version: \x1b[31m${notifier.update.current}\x1b[0m → \x1b[32m${notifier.update.latest}\x1b[0m`);
         console.log("Run \x1b[36mnpm i -g @efthimis.dr/nodelens\x1b[0m to update.");
         console.log("──────────────────────────────────────────────\n");
     }
