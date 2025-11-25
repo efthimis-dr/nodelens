@@ -144,7 +144,7 @@ export const log = {
     // Print a separator line for visual grouping
     separator() {
         if (!shouldPrint("INFO")) return;
-        const line = "-------------------------";
+        const line = "─────────────────────────";
         console.log(line);
 
         if (logFilePath) {
