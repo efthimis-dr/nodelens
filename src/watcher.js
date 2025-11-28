@@ -8,7 +8,10 @@ import { loadConfig, DEFAULT_CONFIG } from "./commands.js";
 import { log, setLogStyle } from "./utils/logger.js";
 import fs from "fs";
 import updateNotifier from "update-notifier";
-import pkg from "../package.json" assert { type: "json" };
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
 
 // ================ INTERNAL STATE ================
 
