@@ -4,13 +4,13 @@ import fs from "fs";
 import path from "path";
 import readline from "readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { createRequire } from "module";
 import { log, setLogStyle } from "./utils/logger.js";
-
-// ================ CONSTANTS ================
+import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
+
+// ================ CONSTANTS ================
 
 const CONFIG_DIR = ".nodelens";
 const CONFIG_FILENAME = "nl.config.json";
